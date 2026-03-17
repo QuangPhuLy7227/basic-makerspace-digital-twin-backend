@@ -1,0 +1,12 @@
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/bin/Debug/net8.0/DigitalTwin.Domain.deps.json
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/bin/Debug/net8.0/DigitalTwin.Domain.dll
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/bin/Debug/net8.0/DigitalTwin.Domain.pdb
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/DigitalTwin.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/DigitalTwin.Domain.AssemblyInfoInputs.cache
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/DigitalTwin.Domain.AssemblyInfo.cs
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/DigitalTwin.Domain.csproj.CoreCompileInputs.cache
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/DigitalTwin.Domain.sourcelink.json
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/DigitalTwin.Domain.dll
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/refint/DigitalTwin.Domain.dll
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/DigitalTwin.Domain.pdb
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/Debug/net8.0/ref/DigitalTwin.Domain.dll

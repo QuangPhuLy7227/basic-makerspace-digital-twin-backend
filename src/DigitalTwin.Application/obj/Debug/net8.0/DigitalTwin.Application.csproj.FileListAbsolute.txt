@@ -1,0 +1,16 @@
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.csproj.AssemblyReference.cache
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.GeneratedMSBuildEditorConfig.editorconfig
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.AssemblyInfoInputs.cache
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.AssemblyInfo.cs
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.csproj.CoreCompileInputs.cache
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.sourcelink.json
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/bin/Debug/net8.0/DigitalTwin.Application.deps.json
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/bin/Debug/net8.0/DigitalTwin.Application.dll
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/bin/Debug/net8.0/DigitalTwin.Application.pdb
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/bin/Debug/net8.0/DigitalTwin.Domain.dll
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/bin/Debug/net8.0/DigitalTwin.Domain.pdb
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalT.C33BCD4A.Up2Date
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.dll
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/refint/DigitalTwin.Application.dll
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/DigitalTwin.Application.pdb
+/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/Debug/net8.0/ref/DigitalTwin.Application.dll

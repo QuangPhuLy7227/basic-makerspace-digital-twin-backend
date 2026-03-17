@@ -1,0 +1,229 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj",
+        "projectName": "DigitalTwin.Application",
+        "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj",
+        "packagesPath": "/home/wangserver2/.nuget/packages/",
+        "outputPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/wangserver2/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj": {
+                "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj",
+        "projectName": "DigitalTwin.Domain",
+        "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj",
+        "packagesPath": "/home/wangserver2/.nuget/packages/",
+        "outputPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/wangserver2/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj",
+        "projectName": "DigitalTwin.Infrastructure",
+        "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj",
+        "packagesPath": "/home/wangserver2/.nuget/packages/",
+        "outputPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/wangserver2/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj": {
+                "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj"
+              },
+              "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj": {
+                "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.Extensions.Caching.Memory": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.12.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
