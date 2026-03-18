@@ -39,10 +39,11 @@ public class PrinterActivitySyncService
                 continue;
 
             var printer = await _db.Printers
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.DeviceId == dto.DeviceId, cancellationToken);
 
             var task = await _db.PrinterTasks
-                .Include(x => x.AmsDetails)
+                .AsTracking()
                 .FirstOrDefaultAsync(x => x.ExternalTaskId == dto.Id, cancellationToken);
 
             if (task is null)
@@ -53,6 +54,7 @@ public class PrinterActivitySyncService
                     ExternalTaskId = dto.Id,
                     CreatedAtUtc = now
                 };
+
                 _db.PrinterTasks.Add(task);
             }
 
@@ -74,13 +76,49 @@ public class PrinterActivitySyncService
             task.SourceUpdatedAtUtc = now;
             task.UpdatedAtUtc = now;
 
-            task.AmsDetails.Clear();
-
-            foreach (var detail in dto.AmsDetailMapping ?? new List<TaskAmsDetailDto>())
+            // Save parent first if new, so child rows have a stable FK
+            try
             {
-                task.AmsDetails.Add(new PrinterTaskAmsDetail
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                foreach (var entry in ex.Entries)
+                {
+                    Console.WriteLine($"[CONCURRENCY][TASKS] Entity={entry.Entity.GetType().Name}, State={entry.State}");
+                }
+
+                throw;
+            }
+
+            // Replace AMS detail rows explicitly
+            var existingDetails = await _db.PrinterTaskAmsDetails
+                .Where(x => x.PrinterTaskId == task.Id)
+                .ToListAsync(cancellationToken);
+
+            if (existingDetails.Count > 0)
+            {
+                _db.PrinterTaskAmsDetails.RemoveRange(existingDetails);
+                try
+                {
+                    await _db.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    foreach (var entry in ex.Entries)
+                    {
+                        Console.WriteLine($"[CONCURRENCY][TASKS] Entity={entry.Entity.GetType().Name}, State={entry.State}");
+                    }
+
+                    throw;
+                }
+            }
+
+            var newDetails = (dto.AmsDetailMapping ?? new List<TaskAmsDetailDto>())
+                .Select(detail => new PrinterTaskAmsDetail
                 {
                     Id = Guid.NewGuid(),
+                    PrinterTaskId = task.Id,
                     Ams = detail.Ams,
                     AmsId = detail.AmsId,
                     SlotId = detail.SlotId,
@@ -93,13 +131,33 @@ public class PrinterActivitySyncService
                     WeightGrams = detail.Weight,
                     CreatedAtUtc = now,
                     UpdatedAtUtc = now
-                });
+                })
+                .ToList();
+
+            if (newDetails.Count > 0)
+            {
+                _db.PrinterTaskAmsDetails.AddRange(newDetails);
+                try
+                {
+                    await _db.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    foreach (var entry in ex.Entries)
+                    {
+                        Console.WriteLine($"[CONCURRENCY][TASKS] Entity={entry.Entity.GetType().Name}, State={entry.State}");
+                    }
+
+                    throw;
+                }
             }
 
-            await _fleetCache.SetSignatureAsync(cacheKey, signature, TimeSpan.FromHours(1), cancellationToken);
+            await _fleetCache.SetSignatureAsync(
+                cacheKey,
+                signature,
+                TimeSpan.FromHours(1),
+                cancellationToken);
         }
-
-        await _db.SaveChangesAsync(cancellationToken);
     }
 
     public async Task SyncMessagesAsync(CancellationToken cancellationToken = default)

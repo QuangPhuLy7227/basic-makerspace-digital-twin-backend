@@ -1,0 +1,18 @@
+Fleet / printer-focused
+curl http://localhost:5017/api/printers
+curl http://localhost:5017/api/printers/01P00A3B2300627
+curl http://localhost:5017/api/printers/01P00A3B2300627/firmware
+curl http://localhost:5017/api/printers/01P00A3B2300627/ams-units
+curl http://localhost:5017/api/printers/01P00A3B2300627/tasks
+curl http://localhost:5017/api/printers/01P00A3B2300627/messages
+curl http://localhost:5017/api/printers/01P00A3B2300627/timeline
+
+
+
+Table-style activity routes
+curl http://localhost:5017/api/tasks
+curl http://localhost:5017/api/tasks/123456
+curl http://localhost:5017/api/messages
+curl http://localhost:5017/api/messages/123456
+curl http://localhost:5017/api/task-ams-details
+curl http://localhost:5017/api/task-ams-details/by-task/123456
