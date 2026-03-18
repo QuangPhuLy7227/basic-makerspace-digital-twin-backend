@@ -13,7 +13,6 @@ public class DigitalTwinDbContext : DbContext
     public DbSet<Printer> Printers => Set<Printer>();
     public DbSet<PrinterFirmwareStatus> PrinterFirmwareStatuses => Set<PrinterFirmwareStatus>();
     public DbSet<PrinterAmsUnit> PrinterAmsUnits => Set<PrinterAmsUnit>();
-    public DbSet<PrinterAmsSlot> PrinterAmsSlots => Set<PrinterAmsSlot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

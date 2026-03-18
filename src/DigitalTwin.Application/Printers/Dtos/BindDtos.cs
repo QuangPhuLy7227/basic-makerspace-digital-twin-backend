@@ -45,31 +45,4 @@ public class BindAmsDto
 
     [JsonPropertyName("temp")]
     public string? Temperature { get; set; }
-
-    [JsonPropertyName("tray")]
-    public List<BindAmsTrayDto>? Trays { get; set; }
-}
-
-public class BindAmsTrayDto
-{
-    [JsonPropertyName("id")]
-    public string? Id { get; set; }
-
-    [JsonPropertyName("tray_type")]
-    public string? TrayType { get; set; }
-
-    [JsonPropertyName("tray_color")]
-    public string? TrayColor { get; set; }
-
-    [JsonPropertyName("remain")]
-    public int? Remain { get; set; }
-
-    [JsonPropertyName("total_len")]
-    public int? TotalLength { get; set; }
-
-    [JsonPropertyName("nozzle_temp_min")]
-    public int? NozzleTempMin { get; set; }
-
-    [JsonPropertyName("nozzle_temp_max")]
-    public int? NozzleTempMax { get; set; }
 }

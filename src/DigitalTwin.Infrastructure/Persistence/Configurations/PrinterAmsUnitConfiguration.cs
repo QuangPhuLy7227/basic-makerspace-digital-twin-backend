@@ -19,10 +19,5 @@ public class PrinterAmsUnitConfiguration : IEntityTypeConfiguration<PrinterAmsUn
         builder.Property(x => x.LatestVersion).HasMaxLength(64);
         builder.Property(x => x.ReleaseStatus).HasMaxLength(64);
         builder.Property(x => x.DownloadUrl).HasMaxLength(1024);
-
-        builder.HasMany(x => x.Slots)
-            .WithOne(x => x.PrinterAmsUnit)
-            .HasForeignKey(x => x.PrinterAmsUnitId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

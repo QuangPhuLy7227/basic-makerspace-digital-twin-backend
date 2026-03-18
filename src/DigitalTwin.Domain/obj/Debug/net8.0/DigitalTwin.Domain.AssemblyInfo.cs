@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DigitalTwin.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+09067baf6451a4f04badfff7d8aff840045f268c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e8be544174998ad26bad4559e9858714ab416e73")]
 [assembly: System.Reflection.AssemblyProductAttribute("DigitalTwin.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DigitalTwin.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

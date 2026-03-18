@@ -22,6 +22,4 @@ public class PrinterAmsUnit
     public DateTimeOffset LastSeenAtUtc { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
-
-    public ICollection<PrinterAmsSlot> Slots { get; set; } = new List<PrinterAmsSlot>();
 }
