@@ -19,7 +19,6 @@ public class PrinterCatalogSyncWorker : BackgroundService
     {
         _logger.LogInformation("PrinterCatalogSyncWorker started.");
 
-        // Run immediately once at startup
         await RunSyncCycleAsync(stoppingToken);
 
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
@@ -39,21 +38,32 @@ public class PrinterCatalogSyncWorker : BackgroundService
         {
             using (var bindScope = _scopeFactory.CreateScope())
             {
-                var bindSyncService = bindScope.ServiceProvider.GetRequiredService<PrinterCatalogSyncService>();
-                await bindSyncService.SyncBindAsync(cancellationToken);
+                var service = bindScope.ServiceProvider.GetRequiredService<PrinterCatalogSyncService>();
+                await service.SyncBindAsync(cancellationToken);
             }
 
             using (var versionScope = _scopeFactory.CreateScope())
             {
-                var versionSyncService = versionScope.ServiceProvider.GetRequiredService<PrinterCatalogSyncService>();
-                await versionSyncService.SyncVersionAsync(cancellationToken);
+                var service = versionScope.ServiceProvider.GetRequiredService<PrinterCatalogSyncService>();
+                await service.SyncVersionAsync(cancellationToken);
             }
 
-            _logger.LogInformation("Printer catalog sync completed successfully at {Time}.", DateTimeOffset.UtcNow);
+            using (var taskScope = _scopeFactory.CreateScope())
+            {
+                var service = taskScope.ServiceProvider.GetRequiredService<PrinterActivitySyncService>();
+                await service.SyncTasksAsync(cancellationToken);
+            }
+
+            using (var messageScope = _scopeFactory.CreateScope())
+            {
+                var service = messageScope.ServiceProvider.GetRequiredService<PrinterActivitySyncService>();
+                await service.SyncMessagesAsync(cancellationToken);
+            }
+
+            _logger.LogInformation("Full printer sync completed successfully at {Time}.", DateTimeOffset.UtcNow);
         }
         catch (OperationCanceledException)
         {
-            // normal shutdown
         }
         catch (Exception ex)
         {

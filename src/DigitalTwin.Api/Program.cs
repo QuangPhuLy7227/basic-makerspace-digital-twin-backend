@@ -1,6 +1,6 @@
 using DigitalTwin.Api.HostedServices;
-using DigitalTwin.Infrastructure.Sync;
 using DigitalTwin.Infrastructure;
+using DigitalTwin.Infrastructure.Sync;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +9,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddScoped<PrinterCatalogSyncService>();
+builder.Services.AddScoped<PrinterActivitySyncService>();
+
 builder.Services.AddHostedService<PrinterCatalogSyncWorker>();
 
 var app = builder.Build();

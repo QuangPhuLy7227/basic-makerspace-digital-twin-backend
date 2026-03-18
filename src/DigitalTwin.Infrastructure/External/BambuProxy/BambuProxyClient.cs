@@ -30,4 +30,22 @@ public class BambuProxyClient : IBambuProxyClient
 
         return response ?? new VersionResponseDto();
     }
+
+    public async Task<MessageResponseDto> GetMessagesAsync(CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetFromJsonAsync<MessageResponseDto>(
+            "/v1/user-service/my/messages",
+            cancellationToken);
+
+        return response ?? new MessageResponseDto();
+    }
+
+    public async Task<TaskResponseDto> GetTasksAsync(CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetFromJsonAsync<TaskResponseDto>(
+            "/v1/user-service/my/tasks",
+            cancellationToken);
+
+        return response ?? new TaskResponseDto();
+    }
 }
