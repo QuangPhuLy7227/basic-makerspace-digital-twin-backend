@@ -39,8 +39,17 @@ public class PrinterActivitySyncService
                 continue;
 
             var printer = await _db.Printers
+                .Include(x => x.SimulationControl)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.DeviceId == dto.DeviceId, cancellationToken);
+
+            if (printer?.SimulationControl is not null &&
+                printer.SimulationControl.IsLocked &&
+                printer.SimulationControl.LockedUntilUtc.HasValue &&
+                printer.SimulationControl.LockedUntilUtc > now)
+            {
+                continue;
+            }
 
             var task = await _db.PrinterTasks
                 .AsTracking()
@@ -180,7 +189,17 @@ public class PrinterActivitySyncService
             if (!string.IsNullOrWhiteSpace(deviceId))
             {
                 printer = await _db.Printers
+                    .Include(x => x.SimulationControl)
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.DeviceId == deviceId, cancellationToken);
+            }
+
+            if (printer?.SimulationControl is not null &&
+                printer.SimulationControl.IsLocked &&
+                printer.SimulationControl.LockedUntilUtc.HasValue &&
+                printer.SimulationControl.LockedUntilUtc > now)
+            {
+                continue;
             }
 
             PrinterTask? relatedTask = null;

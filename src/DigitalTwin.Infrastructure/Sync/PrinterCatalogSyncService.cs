@@ -41,6 +41,7 @@ public class PrinterCatalogSyncService
                 continue;
 
             var printer = await _db.Printers
+                .Include(x => x.SimulationControl)
                 .AsTracking()
                 .FirstOrDefaultAsync(x => x.DeviceId == dto.DeviceId, cancellationToken);
 
@@ -60,8 +61,6 @@ public class PrinterCatalogSyncService
                 ? dto.Name
                 : dto.DeviceId;
 
-            printer.IsOnline = dto.IsOnline;
-            printer.PrintStatus = dto.PrintStatus;
             printer.ModelName = dto.ModelName;
             printer.ProductName = dto.ProductName;
             printer.Structure = dto.Structure;
@@ -69,6 +68,12 @@ public class PrinterCatalogSyncService
             printer.IsAmsSupported = dto.Ams is { Count: > 0 };
             printer.LastBindSyncAtUtc = now;
             printer.UpdatedAtUtc = now;
+
+            if (!IsSimulationLocked(printer, now))
+            {
+                printer.IsOnline = dto.IsOnline;
+                printer.PrintStatus = dto.PrintStatus;
+            }
 
             await UpsertAmsFromBindExplicitAsync(printer.Id, dto, now, cancellationToken);
 
@@ -223,6 +228,14 @@ public class PrinterCatalogSyncService
             unit.LastSeenAtUtc = now;
             unit.UpdatedAtUtc = now;
         }
+    }
+
+    private static bool IsSimulationLocked(Printer printer, DateTimeOffset now)
+    {
+        return printer.SimulationControl is not null &&
+            printer.SimulationControl.IsLocked &&
+            printer.SimulationControl.LockedUntilUtc.HasValue &&
+            printer.SimulationControl.LockedUntilUtc > now;
     }
 
     private static int? TryParseInt(string? value)

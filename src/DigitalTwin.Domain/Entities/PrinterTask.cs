@@ -35,4 +35,7 @@ public class PrinterTask
     public DateTimeOffset UpdatedAtUtc { get; set; }
 
     public ICollection<PrinterTaskAmsDetail> AmsDetails { get; set; } = new List<PrinterTaskAmsDetail>();
+
+    public bool IsSimulated { get; set; }
+    public DateTimeOffset? SimulatedCompleteAtUtc { get; set; }
 }

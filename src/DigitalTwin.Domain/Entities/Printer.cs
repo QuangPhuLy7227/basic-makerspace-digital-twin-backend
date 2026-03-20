@@ -22,4 +22,5 @@ public class Printer
 
     public PrinterFirmwareStatus? FirmwareStatus { get; set; }
     public ICollection<PrinterAmsUnit> AmsUnits { get; set; } = new List<PrinterAmsUnit>();
+    public PrinterSimulationControl? SimulationControl { get; set; }
 }

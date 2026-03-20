@@ -1,5 +1,6 @@
 using DigitalTwin.Application.Printers.Dtos;
 using DigitalTwin.Infrastructure.Persistence;
+using DigitalTwin.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DigitalTwin.Infrastructure.Queries;
@@ -15,8 +16,16 @@ public class PrinterReadService
 
     public async Task<List<PrinterListItemDto>> GetPrintersAsync(CancellationToken cancellationToken = default)
     {
-        return await _db.Printers
+        var now = DateTimeOffset.UtcNow;
+
+        var printers = await _db.Printers
             .AsNoTracking()
+            .Include(p => p.FirmwareStatus)
+            .Include(p => p.AmsUnits)
+            .Include(p => p.SimulationControl)
+            .ToListAsync(cancellationToken);
+
+        return printers
             .Select(p => new PrinterListItemDto
             {
                 DeviceId = p.DeviceId,
@@ -28,22 +37,28 @@ public class PrinterReadService
                 Structure = p.Structure,
                 NozzleDiameterMm = p.NozzleDiameterMm,
                 LastBindSyncAtUtc = p.LastBindSyncAtUtc,
-                AmsUnitCount = p.AmsUnits.Count(),
-                CurrentFirmwareVersion = p.FirmwareStatus != null ? p.FirmwareStatus.CurrentVersion : null,
-                LatestFirmwareVersion = p.FirmwareStatus != null ? p.FirmwareStatus.LatestVersion : null,
-                ForceUpdate = p.FirmwareStatus != null ? p.FirmwareStatus.ForceUpdate : null,
-                LastVersionSyncAtUtc = p.FirmwareStatus != null ? p.FirmwareStatus.LastVersionSyncAtUtc : null
+                AmsUnitCount = p.AmsUnits.Count,
+                CurrentFirmwareVersion = p.FirmwareStatus?.CurrentVersion,
+                LatestFirmwareVersion = p.FirmwareStatus?.LatestVersion,
+                ForceUpdate = p.FirmwareStatus?.ForceUpdate,
+                LastVersionSyncAtUtc = p.FirmwareStatus?.LastVersionSyncAtUtc,
+                OperationalState = ResolveOperationalState(p, now),
+                IsRunning = ResolveOperationalState(p, now) == "RUNNING",
+                IsSimulationControlled = IsSimulationLocked(p, now)
             })
             .OrderBy(x => x.Name)
-            .ToListAsync(cancellationToken);
+            .ToList();
     }
 
     public async Task<PrinterDetailDto?> GetPrinterDetailAsync(string deviceId, CancellationToken cancellationToken = default)
     {
+        var now = DateTimeOffset.UtcNow;
+
         var printer = await _db.Printers
             .AsNoTracking()
             .Include(p => p.FirmwareStatus)
             .Include(p => p.AmsUnits)
+            .Include(p => p.SimulationControl)
             .FirstOrDefaultAsync(p => p.DeviceId == deviceId, cancellationToken);
 
         if (printer is null)
@@ -71,6 +86,11 @@ public class PrinterReadService
             ProductName = printer.ProductName,
             Structure = printer.Structure,
             NozzleDiameterMm = printer.NozzleDiameterMm,
+
+            OperationalState = ResolveOperationalState(printer, now),
+            IsRunning = ResolveOperationalState(printer, now) == "RUNNING",
+            IsSimulationControlled = IsSimulationLocked(printer, now),
+
             Firmware = printer.FirmwareStatus == null ? null : new PrinterFirmwareDto
             {
                 CurrentVersion = printer.FirmwareStatus.CurrentVersion,
@@ -451,5 +471,34 @@ public class PrinterReadService
             .Concat(messages)
             .OrderByDescending(x => x.TimestampUtc)
             .ToList();
+    }
+
+    private static bool IsSimulationLocked(Printer p, DateTimeOffset now)
+    {
+        return p.SimulationControl is not null &&
+            p.SimulationControl.IsLocked &&
+            p.SimulationControl.LockedUntilUtc.HasValue &&
+            p.SimulationControl.LockedUntilUtc > now;
+    }
+
+    private static string ResolveOperationalState(Printer p, DateTimeOffset now)
+    {
+        if (IsSimulationLocked(p, now) &&
+            !string.IsNullOrWhiteSpace(p.SimulationControl!.SimulationState))
+        {
+            return p.SimulationControl.SimulationState!;
+        }
+
+        if (!p.IsOnline)
+            return "OFFLINE";
+
+        return p.PrintStatus switch
+        {
+            "RUNNING" => "RUNNING",
+            "FAIL" => "FAIL",
+            "SUCCESS" => "SUCCESS",
+            "ACTIVE" => "IDLE",
+            _ => "IDLE"
+        };
     }
 }

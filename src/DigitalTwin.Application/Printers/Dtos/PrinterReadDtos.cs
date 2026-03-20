@@ -11,6 +11,10 @@ public class PrinterListItemDto
     public string? Structure { get; set; }
     public decimal? NozzleDiameterMm { get; set; }
 
+    public string OperationalState { get; set; } = null!;
+    public bool IsRunning { get; set; }
+    public bool IsSimulationControlled { get; set; }
+
     public string? CurrentFirmwareVersion { get; set; }
     public string? LatestFirmwareVersion { get; set; }
     public bool? ForceUpdate { get; set; }
@@ -31,6 +35,10 @@ public class PrinterDetailDto
     public string? ProductName { get; set; }
     public string? Structure { get; set; }
     public decimal? NozzleDiameterMm { get; set; }
+
+    public string OperationalState { get; set; } = null!;
+    public bool IsRunning { get; set; }
+    public bool IsSimulationControlled { get; set; }
 
     public PrinterFirmwareDto? Firmware { get; set; }
     public List<PrinterAmsUnitDto> AmsUnits { get; set; } = new();

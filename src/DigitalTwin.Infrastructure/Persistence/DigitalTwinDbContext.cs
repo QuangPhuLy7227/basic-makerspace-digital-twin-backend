@@ -18,6 +18,8 @@ public class DigitalTwinDbContext : DbContext
     public DbSet<PrinterTaskAmsDetail> PrinterTaskAmsDetails => Set<PrinterTaskAmsDetail>();
     public DbSet<PrinterMessage> PrinterMessages => Set<PrinterMessage>();
 
+    public DbSet<PrinterSimulationControl> PrinterSimulationControls => Set<PrinterSimulationControl>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DigitalTwinDbContext).Assembly);
