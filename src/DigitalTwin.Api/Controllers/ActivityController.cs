@@ -59,4 +59,14 @@ public class ActivityController : ControllerBase
     {
         return Ok(await readService.GetTaskAmsDetailsByExternalTaskIdAsync(externalTaskId, cancellationToken));
     }
+
+    [HttpGet("tasks/{externalTaskId:long}/summary")]
+    public async Task<IActionResult> GetTaskSummary(
+        long externalTaskId,
+        [FromServices] TaskTelemetrySummaryService summaryService,
+        CancellationToken cancellationToken)
+    {
+        var result = await summaryService.GetTaskSummaryAsync(externalTaskId, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
 }

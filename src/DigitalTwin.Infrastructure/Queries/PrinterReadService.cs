@@ -473,6 +473,34 @@ public class PrinterReadService
             .ToList();
     }
 
+    public async Task<bool> CanStreamTelemetryAsync(string deviceId, CancellationToken cancellationToken = default)
+    {
+        var printer = await _db.Printers
+            .AsNoTracking()
+            .Include(x => x.SimulationControl)
+            .FirstOrDefaultAsync(x => x.DeviceId == deviceId, cancellationToken);
+
+        if (printer is null)
+            return false;
+
+        if (!string.Equals(printer.PrintStatus, "RUNNING", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        if (printer.SimulationControl is null)
+            return false;
+
+        if (!printer.SimulationControl.IsLocked)
+            return false;
+
+        if (!string.Equals(printer.SimulationControl.SimulationState, "RUNNING", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        if (!printer.SimulationControl.ActivePrinterTaskId.HasValue)
+            return false;
+
+        return true;
+    }
+
     private static bool IsSimulationLocked(Printer p, DateTimeOffset now)
     {
         return p.SimulationControl is not null &&
