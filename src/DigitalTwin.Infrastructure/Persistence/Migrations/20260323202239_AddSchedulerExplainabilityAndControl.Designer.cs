@@ -3,6 +3,7 @@ using System;
 using DigitalTwin.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DigitalTwin.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DigitalTwinDbContext))]
-    partial class DigitalTwinDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323202239_AddSchedulerExplainabilityAndControl")]
+    partial class AddSchedulerExplainabilityAndControl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

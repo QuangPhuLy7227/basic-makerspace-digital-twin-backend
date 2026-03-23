@@ -45,3 +45,40 @@ OR curl -N http://localhost:5017/api/printers/01P00A3B2300627/telemetry/stream
 
 
 GET /api/tasks/{externalTaskId}/summary
+
+
+curl -X POST http://localhost:5017/api/scheduled-print-jobs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fileName": "gear_mount_v2.3mf",
+    "priority": 8,
+    "allowAnyPrinter": true
+  }'
+
+curl -X POST http://localhost:5017/api/scheduled-print-jobs/run-dispatch-cycle
+curl http://localhost:5017/api/scheduled-print-jobs
+
+curl -X POST http://localhost:5017/api/scheduled-print-jobs/<job-guid>/priority \
+  -H "Content-Type: application/json" \
+  -d '{
+    "priority": 20
+  }'
+
+curl http://localhost:5017/api/scheduled-print-jobs/queue-preview
+curl -X POST http://localhost:5017/api/scheduled-print-jobs/reconcile
+
+curl -X POST http://localhost:5017/api/scheduled-print-jobs/scheduler-control \
+  -H "Content-Type: application/json" \
+  -d '{
+    "isPaused": true,
+    "pauseReason": "Manual maintenance pause"
+  }'
+
+curl -X POST http://localhost:5017/api/scheduled-print-jobs/scheduler-control \
+  -H "Content-Type: application/json" \
+  -d '{
+    "isPaused": false,
+    "pauseReason": null
+  }'
+
+curl http://localhost:5017/api/scheduled-print-jobs/scheduler-control

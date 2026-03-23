@@ -19,6 +19,8 @@ public class DigitalTwinDbContext : DbContext
     public DbSet<PrinterMessage> PrinterMessages => Set<PrinterMessage>();
 
     public DbSet<PrinterSimulationControl> PrinterSimulationControls => Set<PrinterSimulationControl>();
+    public DbSet<ScheduledPrintJob> ScheduledPrintJobs => Set<ScheduledPrintJob>();
+    public DbSet<SchedulerControl> SchedulerControls => Set<SchedulerControl>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

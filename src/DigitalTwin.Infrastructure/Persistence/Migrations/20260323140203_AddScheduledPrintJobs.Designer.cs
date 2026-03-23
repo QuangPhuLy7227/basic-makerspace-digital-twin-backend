@@ -3,6 +3,7 @@ using System;
 using DigitalTwin.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DigitalTwin.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DigitalTwinDbContext))]
-    partial class DigitalTwinDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323140203_AddScheduledPrintJobs")]
+    partial class AddScheduledPrintJobs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -485,10 +488,6 @@ namespace DigitalTwin.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("AssignedPrinterId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CompatibilityNote")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -506,12 +505,6 @@ namespace DigitalTwin.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("EstimatedFilamentGrams")
                         .HasPrecision(10, 2)
                         .HasColumnType("numeric(10,2)");
-
-                    b.Property<DateTimeOffset?>("EstimatedFinishAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("EstimatedStartAtUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -541,10 +534,6 @@ namespace DigitalTwin.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTimeOffset?>("RequestedStartAfterUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("SchedulerDecisionReason")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
 
                     b.Property<Guid?>("StartedPrinterTaskId")
                         .HasColumnType("uuid");
@@ -576,30 +565,6 @@ namespace DigitalTwin.Infrastructure.Persistence.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("scheduled_print_jobs", (string)null);
-                });
-
-            modelBuilder.Entity("DigitalTwin.Domain.Entities.SchedulerControl", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsPaused")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("PauseReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTimeOffset>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("scheduler_controls", (string)null);
                 });
 
             modelBuilder.Entity("DigitalTwin.Domain.Entities.PrinterAmsUnit", b =>

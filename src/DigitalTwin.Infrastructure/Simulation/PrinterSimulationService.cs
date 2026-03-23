@@ -184,7 +184,7 @@ public class PrinterSimulationService
 
     ///////////////////////////////////////////////////////////////////////
 
-    public async Task<(bool Success, string Message)> StartPrinterAsync(
+    public async Task<StartSimulationResult> StartPrinterAsync(
         string deviceId,
         string? designTitle,
         int simulatedDurationSeconds,
@@ -195,14 +195,26 @@ public class PrinterSimulationService
             .FirstOrDefaultAsync(x => x.DeviceId == deviceId, cancellationToken);
 
         if (printer is null)
-            return (false, "Printer not found.");
+            return new StartSimulationResult
+                {
+                    Success = false,
+                    Message = "Printer not found."
+                };
 
         if (!printer.IsOnline)
-            return (false, "Printer is offline. Start is not allowed.");
+            return new StartSimulationResult
+                {
+                    Success = false,
+                    Message = "Printer is offline. Start is not allowed."
+                };
 
         var allowedStatuses = new[] { "ACTIVE", "SUCCESS", "FAIL" };
         if (string.IsNullOrWhiteSpace(printer.PrintStatus) || !allowedStatuses.Contains(printer.PrintStatus))
-            return (false, $"Start not allowed when PrintStatus is '{printer.PrintStatus}'.");
+            return new StartSimulationResult
+                {
+                    Success = false,
+                    Message = $"Start not allowed when PrintStatus is '{printer.PrintStatus}'."
+                };
 
         var now = DateTimeOffset.UtcNow;
 
@@ -215,7 +227,11 @@ public class PrinterSimulationService
                 cancellationToken);
 
         if (runningTask is not null)
-            return (false, "This printer already has a running simulated task.");
+            return new StartSimulationResult
+                {
+                    Success = false,
+                    Message = "This printer already has a running simulated task."
+                };
 
         var titles = GetRandomDesignTitle();
         var externalTaskIdText = GenerateExternalTaskId();
@@ -336,7 +352,13 @@ public class PrinterSimulationService
         _db.PrinterMessages.Add(message);
         await _db.SaveChangesAsync(cancellationToken);
 
-        return (true, "Simulated start successful.");
+        return new StartSimulationResult
+        {
+            Success = true,
+            Message = "Simulated start successful.",
+            PrinterTaskId = task.Id,
+            ExternalTaskId = task.ExternalTaskId
+        };
     }
 
 
