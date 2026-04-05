@@ -1,0 +1,25 @@
+# build outputs
+**/bin/
+**/obj/
+
+# IDE / tooling
+.vs/
+.vscode/
+.idea/
+
+# git
+.git
+.gitignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+
+# docker
+docker-compose*.yml
+
+# docs
+README.md
