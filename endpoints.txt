@@ -18,14 +18,14 @@ curl http://localhost:5017/api/task-ams-details
 curl http://localhost:5017/api/task-ams-details/by-task/123456
 
 
-curl -X POST http://localhost:5017/api/printers/01P00A3B2300627/simulate/start \
+curl -X POST http://localhost:5017/api/printers/01P00A3C1900861/simulate/start \
   -H "Content-Type: application/json" \
   -d '{
     "designTitle": "Hydraulic Valve Cap",
     "simulatedDurationSeconds": 180
   }'
 
-curl -X POST http://localhost:5017/api/printers/01P00A3B2300627/simulate/stop
+curl -X POST http://localhost:5017/api/printers/01P00A3C1900861/simulate/stop
 
 GET /api/printers/running
 
@@ -41,7 +41,7 @@ es.addEventListener("telemetry", (event) => {
 });
 ###################################################################
 OR http://localhost:5017/api/printers/01P00A3B2300627/telemetry/stream
-OR curl -N http://localhost:5017/api/printers/01P00A3B2300627/telemetry/stream
+OR curl -N http://localhost:5017/api/printers/01P00A3C1900861/telemetry/stream
 
 
 GET /api/tasks/{externalTaskId}/summary

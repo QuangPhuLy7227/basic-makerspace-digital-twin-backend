@@ -60,14 +60,14 @@ public class ScheduledPrintJobsController : ControllerBase
         return Ok(new { message = result.Message });
     }
 
-    [HttpPost("run-dispatch-cycle")]
-    public async Task<IActionResult> RunDispatchCycle(
-        [FromServices] PrintSchedulerService scheduler,
-        CancellationToken cancellationToken)
-    {
-        await scheduler.RunDispatchCycleAsync(cancellationToken);
-        return Ok(new { message = "Dispatch cycle completed." });
-    }
+    // [HttpPost("run-dispatch-cycle")]
+    // public async Task<IActionResult> RunDispatchCycle(
+    //     [FromServices] PrintSchedulerService scheduler,
+    //     CancellationToken cancellationToken)
+    // {
+    //     await scheduler.RunDispatchCycleAsync(cancellationToken);
+    //     return Ok(new { message = "Dispatch cycle completed." });
+    // }
 
     [HttpPost("{jobId:guid}/priority")]
     public async Task<IActionResult> UpdatePriority(
@@ -93,35 +93,35 @@ public class ScheduledPrintJobsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("reconcile")]
-    public async Task<IActionResult> ReconcileRunningJobs(
-        [FromServices] PrintSchedulerService scheduler,
-        CancellationToken cancellationToken)
-    {
-        await scheduler.ReconcileRunningJobsAsync(cancellationToken);
-        return Ok(new { message = "Reconcile completed." });
-    }
+    // [HttpPost("reconcile")]
+    // public async Task<IActionResult> ReconcileRunningJobs(
+    //     [FromServices] PrintSchedulerService scheduler,
+    //     CancellationToken cancellationToken)
+    // {
+    //     await scheduler.ReconcileRunningJobsAsync(cancellationToken);
+    //     return Ok(new { message = "Reconcile completed." });
+    // }
 
-    [HttpGet("scheduler-control")]
-    public async Task<IActionResult> GetSchedulerControl(
-        [FromServices] ScheduledPrintJobReadService service,
-        CancellationToken cancellationToken)
-    {
-        var result = await service.GetSchedulerControlAsync(cancellationToken);
-        return Ok(result);
-    }
+    // [HttpGet("scheduler-control")]
+    // public async Task<IActionResult> GetSchedulerControl(
+    //     [FromServices] ScheduledPrintJobReadService service,
+    //     CancellationToken cancellationToken)
+    // {
+    //     var result = await service.GetSchedulerControlAsync(cancellationToken);
+    //     return Ok(result);
+    // }
 
-    [HttpPost("scheduler-control")]
-    public async Task<IActionResult> UpdateSchedulerControl(
-        [FromBody] UpdateSchedulerPauseRequest request,
-        [FromServices] ScheduledPrintJobReadService service,
-        CancellationToken cancellationToken)
-    {
-        var result = await service.UpdateSchedulerControlAsync(
-            request.IsPaused,
-            request.PauseReason,
-            cancellationToken);
+    // [HttpPost("scheduler-control")]
+    // public async Task<IActionResult> UpdateSchedulerControl(
+    //     [FromBody] UpdateSchedulerPauseRequest request,
+    //     [FromServices] ScheduledPrintJobReadService service,
+    //     CancellationToken cancellationToken)
+    // {
+    //     var result = await service.UpdateSchedulerControlAsync(
+    //         request.IsPaused,
+    //         request.PauseReason,
+    //         cancellationToken);
 
-        return Ok(result);
-    }
+    //     return Ok(result);
+    // }
 }

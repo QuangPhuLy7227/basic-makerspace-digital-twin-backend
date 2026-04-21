@@ -195,60 +195,60 @@ public class ScheduledPrintJobReadService
         }).ToList();
     }
 
-    public async Task<SchedulerControlDto> GetSchedulerControlAsync(CancellationToken cancellationToken = default)
-    {
-        var control = await GetOrCreateSchedulerControlAsync(cancellationToken);
+    // public async Task<SchedulerControlDto> GetSchedulerControlAsync(CancellationToken cancellationToken = default)
+    // {
+    //     var control = await GetOrCreateSchedulerControlAsync(cancellationToken);
 
-        return new SchedulerControlDto
-        {
-            IsPaused = control.IsPaused,
-            PauseReason = control.PauseReason,
-            UpdatedAtUtc = control.UpdatedAtUtc
-        };
-    }
+    //     return new SchedulerControlDto
+    //     {
+    //         IsPaused = control.IsPaused,
+    //         PauseReason = control.PauseReason,
+    //         UpdatedAtUtc = control.UpdatedAtUtc
+    //     };
+    // }
 
-    public async Task<SchedulerControlDto> UpdateSchedulerControlAsync(
-        bool isPaused,
-        string? pauseReason,
-        CancellationToken cancellationToken = default)
-    {
-        var control = await GetOrCreateSchedulerControlAsync(cancellationToken);
+    // public async Task<SchedulerControlDto> UpdateSchedulerControlAsync(
+    //     bool isPaused,
+    //     string? pauseReason,
+    //     CancellationToken cancellationToken = default)
+    // {
+    //     var control = await GetOrCreateSchedulerControlAsync(cancellationToken);
 
-        control.IsPaused = isPaused;
-        control.PauseReason = pauseReason;
-        control.UpdatedAtUtc = DateTimeOffset.UtcNow;
+    //     control.IsPaused = isPaused;
+    //     control.PauseReason = pauseReason;
+    //     control.UpdatedAtUtc = DateTimeOffset.UtcNow;
 
-        await _db.SaveChangesAsync(cancellationToken);
+    //     await _db.SaveChangesAsync(cancellationToken);
 
-        return new SchedulerControlDto
-        {
-            IsPaused = control.IsPaused,
-            PauseReason = control.PauseReason,
-            UpdatedAtUtc = control.UpdatedAtUtc
-        };
-    }
+    //     return new SchedulerControlDto
+    //     {
+    //         IsPaused = control.IsPaused,
+    //         PauseReason = control.PauseReason,
+    //         UpdatedAtUtc = control.UpdatedAtUtc
+    //     };
+    // }
 
-    private async Task<SchedulerControl> GetOrCreateSchedulerControlAsync(CancellationToken cancellationToken)
-    {
-        var control = await _db.SchedulerControls.FirstOrDefaultAsync(cancellationToken);
+    // private async Task<SchedulerControl> GetOrCreateSchedulerControlAsync(CancellationToken cancellationToken)
+    // {
+    //     var control = await _db.SchedulerControls.FirstOrDefaultAsync(cancellationToken);
 
-        if (control is not null)
-            return control;
+    //     if (control is not null)
+    //         return control;
 
-        control = new SchedulerControl
-        {
-            Id = Guid.NewGuid(),
-            IsPaused = false,
-            PauseReason = null,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            UpdatedAtUtc = DateTimeOffset.UtcNow
-        };
+    //     control = new SchedulerControl
+    //     {
+    //         Id = Guid.NewGuid(),
+    //         IsPaused = false,
+    //         PauseReason = null,
+    //         CreatedAtUtc = DateTimeOffset.UtcNow,
+    //         UpdatedAtUtc = DateTimeOffset.UtcNow
+    //     };
 
-        _db.SchedulerControls.Add(control);
-        await _db.SaveChangesAsync(cancellationToken);
+    //     _db.SchedulerControls.Add(control);
+    //     await _db.SaveChangesAsync(cancellationToken);
 
-        return control;
-    }
+    //     return control;
+    // }
 
     private async Task<ScheduledPrintJobDto> GetByIdOrThrowAsync(Guid id, CancellationToken cancellationToken)
     {

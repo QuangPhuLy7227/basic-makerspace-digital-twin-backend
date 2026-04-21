@@ -1,0 +1,4 @@
+curl http://localhost:5017/api/inventory/zones
+curl "http://localhost:5017/api/inventory/zones?cameraId=cam_1"
+
+curl -N http://localhost:5017/api/inventory/zones/stream

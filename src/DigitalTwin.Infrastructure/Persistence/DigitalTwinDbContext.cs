@@ -22,6 +22,8 @@ public class DigitalTwinDbContext : DbContext
     public DbSet<ScheduledPrintJob> ScheduledPrintJobs => Set<ScheduledPrintJob>();
     public DbSet<SchedulerControl> SchedulerControls => Set<SchedulerControl>();
 
+    public DbSet<CvZoneState> CvZoneStates => Set<CvZoneState>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DigitalTwinDbContext).Assembly);

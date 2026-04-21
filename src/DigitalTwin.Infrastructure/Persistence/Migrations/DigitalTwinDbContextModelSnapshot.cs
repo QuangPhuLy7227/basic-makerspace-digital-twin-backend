@@ -22,6 +22,52 @@ namespace DigitalTwin.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DigitalTwin.Domain.Entities.CvZoneState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CameraId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("LastAnomalyTsUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("LastInventoryTsUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OtherObjectCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SpoolIdsJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UnknownSpoolCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ZoneName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CameraId", "ZoneName")
+                        .IsUnique();
+
+                    b.ToTable("cv_zone_states", (string)null);
+                });
+
             modelBuilder.Entity("DigitalTwin.Domain.Entities.Printer", b =>
                 {
                     b.Property<Guid>("Id")

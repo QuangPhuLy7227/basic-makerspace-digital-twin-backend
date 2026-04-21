@@ -17,30 +17,32 @@ public class PrintSchedulingWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("PrintSchedulingWorker started.");
+        _logger.LogInformation("PrintSchedulingWorker is disabled.");
+        await Task.CompletedTask;
+        // _logger.LogInformation("PrintSchedulingWorker started.");
 
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        // using var timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
 
-        while (!stoppingToken.IsCancellationRequested &&
-               await timer.WaitForNextTickAsync(stoppingToken))
-        {
-            try
-            {
-                using var scope = _scopeFactory.CreateScope();
-                var scheduler = scope.ServiceProvider.GetRequiredService<PrintSchedulerService>();
+        // while (!stoppingToken.IsCancellationRequested &&
+        //        await timer.WaitForNextTickAsync(stoppingToken))
+        // {
+        //     try
+        //     {
+        //         using var scope = _scopeFactory.CreateScope();
+        //         var scheduler = scope.ServiceProvider.GetRequiredService<PrintSchedulerService>();
 
-                await scheduler.RunDispatchCycleAsync(stoppingToken);
-                await scheduler.RefreshQueueEstimatesAsync(stoppingToken);
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Print scheduling worker failed.");
-            }
-        }
+        //         await scheduler.RunDispatchCycleAsync(stoppingToken);
+        //         await scheduler.RefreshQueueEstimatesAsync(stoppingToken);
+        //     }
+        //     catch (OperationCanceledException)
+        //     {
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Print scheduling worker failed.");
+        //     }
+        // }
 
-        _logger.LogInformation("PrintSchedulingWorker stopped.");
+        // _logger.LogInformation("PrintSchedulingWorker stopped.");
     }
 }

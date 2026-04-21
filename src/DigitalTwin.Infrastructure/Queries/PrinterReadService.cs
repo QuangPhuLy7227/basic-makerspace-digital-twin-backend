@@ -26,26 +26,25 @@ public class PrinterReadService
             .ToListAsync(cancellationToken);
 
         return printers
-            .Select(p => new PrinterListItemDto
-            {
-                DeviceId = p.DeviceId,
-                Name = p.Name,
-                IsOnline = p.IsOnline,
-                PrintStatus = p.PrintStatus,
-                ModelName = p.ModelName,
-                ProductName = p.ProductName,
-                Structure = p.Structure,
-                NozzleDiameterMm = p.NozzleDiameterMm,
-                LastBindSyncAtUtc = p.LastBindSyncAtUtc,
-                AmsUnitCount = p.AmsUnits.Count,
-                CurrentFirmwareVersion = p.FirmwareStatus?.CurrentVersion,
-                LatestFirmwareVersion = p.FirmwareStatus?.LatestVersion,
-                ForceUpdate = p.FirmwareStatus?.ForceUpdate,
-                LastVersionSyncAtUtc = p.FirmwareStatus?.LastVersionSyncAtUtc,
-                OperationalState = ResolveOperationalState(p, now),
-                IsRunning = ResolveOperationalState(p, now) == "RUNNING",
-                IsSimulationControlled = IsSimulationLocked(p, now)
-            })
+            .Select(p => MapPrinterListItem(p, now))
+            .OrderBy(x => x.Name)
+            .ToList();
+    }
+
+    public async Task<List<PrinterListItemDto>> GetRunningPrintersAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTimeOffset.UtcNow;
+
+        var printers = await _db.Printers
+            .AsNoTracking()
+            .Include(p => p.FirmwareStatus)
+            .Include(p => p.AmsUnits)
+            .Include(p => p.SimulationControl)
+            .ToListAsync(cancellationToken);
+
+        return printers
+            .Select(p => MapPrinterListItem(p, now))
+            .Where(x => x.IsRunning)
             .OrderBy(x => x.Name)
             .ToList();
     }
@@ -527,6 +526,33 @@ public class PrinterReadService
             "SUCCESS" => "SUCCESS",
             "ACTIVE" => "IDLE",
             _ => "IDLE"
+        };
+    }
+
+    private static PrinterListItemDto MapPrinterListItem(Printer p, DateTimeOffset now)
+    {
+        var operationalState = ResolveOperationalState(p, now);
+        var isSimulationControlled = IsSimulationLocked(p, now);
+
+        return new PrinterListItemDto
+        {
+            DeviceId = p.DeviceId,
+            Name = p.Name,
+            IsOnline = p.IsOnline,
+            PrintStatus = p.PrintStatus,
+            ModelName = p.ModelName,
+            ProductName = p.ProductName,
+            Structure = p.Structure,
+            NozzleDiameterMm = p.NozzleDiameterMm,
+            LastBindSyncAtUtc = p.LastBindSyncAtUtc,
+            AmsUnitCount = p.AmsUnits.Count,
+            CurrentFirmwareVersion = p.FirmwareStatus?.CurrentVersion,
+            LatestFirmwareVersion = p.FirmwareStatus?.LatestVersion,
+            ForceUpdate = p.FirmwareStatus?.ForceUpdate,
+            LastVersionSyncAtUtc = p.FirmwareStatus?.LastVersionSyncAtUtc,
+            OperationalState = operationalState,
+            IsRunning = string.Equals(operationalState, "RUNNING", StringComparison.OrdinalIgnoreCase),
+            IsSimulationControlled = isSimulationControlled
         };
     }
 }

@@ -82,15 +82,15 @@ public class ScheduledPrintJobPreviewDto
     public DateTimeOffset? EstimatedFinishAtUtc { get; set; }
 }
 
-public class SchedulerControlDto
-{
-    public bool IsPaused { get; set; }
-    public string? PauseReason { get; set; }
-    public DateTimeOffset UpdatedAtUtc { get; set; }
-}
+// public class SchedulerControlDto
+// {
+//     public bool IsPaused { get; set; }
+//     public string? PauseReason { get; set; }
+//     public DateTimeOffset UpdatedAtUtc { get; set; }
+// }
 
-public class UpdateSchedulerPauseRequest
-{
-    public bool IsPaused { get; set; }
-    public string? PauseReason { get; set; }
-}
+// public class UpdateSchedulerPauseRequest
+// {
+//     public bool IsPaused { get; set; }
+//     public string? PauseReason { get; set; }
+// }

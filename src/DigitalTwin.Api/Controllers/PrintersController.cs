@@ -15,6 +15,14 @@ public class PrintersController : ControllerBase
         return Ok(await readService.GetPrintersAsync(cancellationToken));
     }
 
+    [HttpGet("running")]
+    public async Task<IActionResult> GetRunningPrinters(
+        [FromServices] PrinterReadService readService,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await readService.GetRunningPrintersAsync(cancellationToken));
+    }
+
     [HttpGet("{deviceId}")]
     public async Task<IActionResult> GetPrinterDetail(
         string deviceId,

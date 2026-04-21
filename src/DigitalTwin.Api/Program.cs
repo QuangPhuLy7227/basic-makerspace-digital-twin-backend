@@ -8,8 +8,21 @@ using DigitalTwin.Api.Streaming;
 using DigitalTwin.Application.Abstractions.Telemetry;
 using DigitalTwin.Infrastructure.Telemetry;
 using DigitalTwin.Infrastructure.Scheduling;
+using DigitalTwin.Application.Abstractions.Inventory;
+using DigitalTwin.Infrastructure.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -32,12 +45,18 @@ builder.Services.AddSingleton<PrinterTelemetryGenerator>();
 builder.Services.AddHostedService<PrinterCatalogSyncWorker>();
 builder.Services.AddHostedService<PrinterSimulationCompletionWorker>();
 builder.Services.AddHostedService<PrinterSimulationTelemetryWorker>();
-if (builder.Configuration.GetValue<bool>("Workers:EnablePrintSchedulingWorker"))
-{
-    builder.Services.AddHostedService<PrintSchedulingWorker>();
-}
+// if (builder.Configuration.GetValue<bool>("Workers:EnablePrintSchedulingWorker"))
+// {
+//     builder.Services.AddHostedService<PrintSchedulingWorker>();
+// }
+builder.Services.AddSingleton<IZoneInventoryPublisher, InMemoryZoneInventoryPublisher>();
+builder.Services.AddScoped<CvZoneStateService>();
+
+builder.Services.AddHostedService<CvEventsConsumerWorker>();
 
 var app = builder.Build();
+
+app.UseCors("AllowAll");
 
 app.UseSwagger();
 app.UseSwaggerUI();
