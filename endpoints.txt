@@ -12,6 +12,16 @@ curl http://localhost:5017/api/printers/01P00A3B2300627/messages
 curl "http://localhost:5017/api/printers/by-name/messages?name=A1-P1S"
 curl http://localhost:5017/api/printers/01P00A3B2300627/timeline
 curl "http://localhost:5017/api/printers/by-name/timeline?name=A1-P1S"
+curl http://localhost:5017/api/printers/01P00A3B2300627/loaded-spools
+curl "http://localhost:5017/api/printers/by-name/loaded-spools?name=A1-P1S"
+curl "http://localhost:5017/api/printers/01P00A3B2300627/replacement-suggestions?lowThresholdPercent=15"
+curl "http://localhost:5017/api/printers/by-name/replacement-suggestions?name=A1-P1S&lowThresholdPercent=15"
+curl -X PUT http://localhost:5017/api/printers/01P00A3B2300627/loaded-spools \
+  -H "Content-Type: application/json" \
+  -d '{"loadedSpools":[]}'
+curl -X PUT "http://localhost:5017/api/printers/by-name/loaded-spools?name=A1-P1S" \
+  -H "Content-Type: application/json" \
+  -d '{"loadedSpools":[]}'
 
 
 

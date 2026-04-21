@@ -128,7 +128,6 @@ public class PrintersController : ControllerBase
     }
 
     // Routes for Querying with deviceName
-
     [HttpGet("by-name")]
     public async Task<IActionResult> GetPrinterDetailByName(
         [FromQuery] string name,
@@ -270,6 +269,87 @@ public class PrintersController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return Conflict(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("by-name/loaded-spools")]
+    public async Task<IActionResult> GetLoadedSpoolsByName(
+        [FromQuery] string name,
+        [FromServices] PrinterReadService readService,
+        [FromServices] CvZoneStateService service,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest(new { message = "Query parameter 'name' is required." });
+
+        try
+        {
+            var deviceId = await readService.ResolveDeviceIdByNameAsync(name, cancellationToken);
+            if (deviceId is null)
+                return Ok(Array.Empty<PrinterLoadedSpoolDto>());
+
+            var result = await service.GetPrinterLoadedSpoolsAsync(deviceId, cancellationToken);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("by-name/replacement-suggestions")]
+    public async Task<IActionResult> GetReplacementSuggestionsByName(
+        [FromQuery] string name,
+        [FromQuery] decimal lowThresholdPercent,
+        [FromServices] PrinterReadService readService,
+        [FromServices] CvZoneStateService service,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest(new { message = "Query parameter 'name' is required." });
+
+        try
+        {
+            var deviceId = await readService.ResolveDeviceIdByNameAsync(name, cancellationToken);
+            if (deviceId is null)
+                return NotFound();
+
+            var threshold = lowThresholdPercent <= 0 ? 15m : lowThresholdPercent;
+            var result = await service.GetReplacementSuggestionsAsync(deviceId, threshold, cancellationToken);
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut("by-name/loaded-spools")]
+    public async Task<IActionResult> UpdateLoadedSpoolsByName(
+        [FromQuery] string name,
+        [FromBody] UpdatePrinterLoadedSpoolsRequest request,
+        [FromServices] PrinterReadService readService,
+        [FromServices] CvZoneStateService service,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest(new { message = "Query parameter 'name' is required." });
+
+        try
+        {
+            var deviceId = await readService.ResolveDeviceIdByNameAsync(name, cancellationToken);
+            if (deviceId is null)
+                return NotFound();
+
+            var result = await service.UpdatePrinterLoadedSpoolsAsync(deviceId, request, cancellationToken);
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new
+            {
+                message = ex.Message
+            });
         }
     }
 

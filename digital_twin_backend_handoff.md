@@ -208,6 +208,12 @@ Supports:
 - `GET /api/printers/by-name/messages?name={name}`
 - `GET /api/printers/{deviceId}/timeline`
 - `GET /api/printers/by-name/timeline?name={name}`
+- `GET /api/printers/{deviceId}/loaded-spools`
+- `GET /api/printers/by-name/loaded-spools?name={name}`
+- `GET /api/printers/{deviceId}/replacement-suggestions`
+- `GET /api/printers/by-name/replacement-suggestions?name={name}`
+- `PUT /api/printers/{deviceId}/loaded-spools`
+- `PUT /api/printers/by-name/loaded-spools?name={name}`
 
 ### Simulation
 - `POST /api/printers/{deviceId}/simulate/start`
