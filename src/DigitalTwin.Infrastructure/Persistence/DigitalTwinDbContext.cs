@@ -23,6 +23,8 @@ public class DigitalTwinDbContext : DbContext
     public DbSet<SchedulerControl> SchedulerControls => Set<SchedulerControl>();
 
     public DbSet<CvZoneState> CvZoneStates => Set<CvZoneState>();
+    public DbSet<CvZoneSpool> CvZoneSpools => Set<CvZoneSpool>();
+    public DbSet<PrinterLoadedSpool> PrinterLoadedSpools => Set<PrinterLoadedSpool>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

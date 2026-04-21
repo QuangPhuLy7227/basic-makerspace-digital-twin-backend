@@ -26,6 +26,7 @@ public class CvZoneStateService
     {
         var now = DateTimeOffset.UtcNow;
 
+        // 1. Update cv_zone_states summary rows
         foreach (var zoneEntry in message.Zones)
         {
             var zoneName = zoneEntry.Key;
@@ -53,6 +54,45 @@ public class CvZoneStateService
             state.LastInventoryTsUtc = message.Ts;
             state.UpdatedAtUtc = now;
         }
+
+        // 2. Replace current normalized outside-printer spools for this camera
+        var existingSpools = await _db.CvZoneSpools
+            .Where(x => x.CameraId == message.CameraId)
+            .ToListAsync(cancellationToken);
+
+        _db.CvZoneSpools.RemoveRange(existingSpools);
+
+        var newRows = new List<CvZoneSpool>();
+
+        foreach (var zoneEntry in message.Zones)
+        {
+            var zoneName = zoneEntry.Key;
+            var zone = zoneEntry.Value;
+
+            foreach (var spoolCode in zone.SpoolIds.Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                var parsed = TryParseSpoolCode(spoolCode);
+                if (parsed is null)
+                    continue;
+
+                newRows.Add(new CvZoneSpool
+                {
+                    Id = Guid.NewGuid(),
+                    CameraId = message.CameraId,
+                    ZoneName = zoneName,
+                    SpoolCode = spoolCode,
+                    MaterialType = parsed.Value.MaterialType,
+                    ColorName = parsed.Value.ColorName,
+                    ColorHex = parsed.Value.ColorHex,
+                    LastSeenAtUtc = message.Ts,
+                    UpdatedAtUtc = now,
+                    CreatedAtUtc = now
+                });
+            }
+        }
+
+        if (newRows.Count > 0)
+            _db.CvZoneSpools.AddRange(newRows);
 
         await _db.SaveChangesAsync(cancellationToken);
 
@@ -110,12 +150,33 @@ public class CvZoneStateService
             .OrderBy(x => x.ZoneName)
             .ToListAsync(cancellationToken);
 
+        var zoneSpools = await _db.CvZoneSpools
+            .AsNoTracking()
+            .Where(x => x.CameraId == cameraId)
+            .ToListAsync(cancellationToken);
+
+        var spoolGroups = zoneSpools
+            .GroupBy(x => x.ZoneName, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                g => g.Key,
+                g => g.ToList(),
+                StringComparer.OrdinalIgnoreCase);
+
         var zoneMap = new Dictionary<string, ZoneViewDto>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var state in states)
         {
-            var spoolIds = DeserializeSpoolIds(state.SpoolIdsJson);
-            var colors = await BuildColorCountsAsync(spoolIds, cancellationToken);
+            var colors = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+            if (spoolGroups.TryGetValue(state.ZoneName, out var spoolsInZone))
+            {
+                foreach (var spool in spoolsInZone)
+                {
+                    colors[spool.ColorName] = colors.TryGetValue(spool.ColorName, out var count)
+                        ? count + 1
+                        : 1;
+                }
+            }
 
             zoneMap[state.ZoneName] = new ZoneViewDto
             {
@@ -147,103 +208,241 @@ public class CvZoneStateService
         return await GetSnapshotAsync(latestCameraId, cancellationToken);
     }
 
-    // private async Task<Dictionary<string, int>> BuildColorCountsAsync(
-    //     List<string> spoolIds,
-    //     CancellationToken cancellationToken)
-    // {
-    //     var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-    //     if (spoolIds.Count == 0)
-    //         return result;
-
-    //     // TODO: replace this with your real spool registry table once available.
-    //     // For Phase 1, this assumes you have or will have a Spools table with SpoolId and Color.
-    //     // If not available yet, leave colors empty rather than inventing data.
-    //     var spoolColorRows = await _db.Set<SpoolRegistryStub>()
-    //         .AsNoTracking()
-    //         .Where(x => spoolIds.Contains(x.SpoolId))
-    //         .Select(x => new { x.SpoolId, x.Color })
-    //         .ToListAsync(cancellationToken);
-
-    //     var colorBySpoolId = spoolColorRows
-    //         .GroupBy(x => x.SpoolId)
-    //         .ToDictionary(g => g.Key, g => g.First().Color ?? "unknown", StringComparer.OrdinalIgnoreCase);
-
-    //     foreach (var spoolId in spoolIds)
-    //     {
-    //         if (!colorBySpoolId.TryGetValue(spoolId, out var color))
-    //             continue;
-
-    //         if (string.IsNullOrWhiteSpace(color))
-    //             continue;
-
-    //         result[color] = result.TryGetValue(color, out var count) ? count + 1 : 1;
-    //     }
-
-    //     return result;
-    // }
-    private Task<Dictionary<string, int>> BuildColorCountsAsync(
-        List<string> spoolIds,
-        CancellationToken cancellationToken)
+    public async Task<List<CvZoneSpool>> GetInventorySpoolsAsync(
+        string? materialType,
+        string? colorName,
+        CancellationToken cancellationToken = default)
     {
-        var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var query = _db.CvZoneSpools
+            .AsNoTracking()
+            .AsQueryable();
 
-        foreach (var spoolId in spoolIds)
-        {
-            var color = TryExtractColorFromSpoolId(spoolId);
-            if (string.IsNullOrWhiteSpace(color))
-                continue;
+        if (!string.IsNullOrWhiteSpace(materialType))
+            query = query.Where(x => x.MaterialType == materialType);
 
-            result[color] = result.TryGetValue(color, out var count) ? count + 1 : 1;
-        }
+        if (!string.IsNullOrWhiteSpace(colorName))
+            query = query.Where(x => x.ColorName == colorName);
 
-        return Task.FromResult(result);
+        return await query
+            .OrderBy(x => x.ZoneName)
+            .ThenBy(x => x.ColorName)
+            .ToListAsync(cancellationToken);
     }
 
-    private static string? TryExtractColorFromSpoolId(string spoolId)
+    public async Task<List<PrinterLoadedSpoolDto>> GetPrinterLoadedSpoolsAsync(
+        string deviceId,
+        CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(spoolId))
+        var printer = await _db.Printers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.DeviceId == deviceId, cancellationToken);
+
+        if (printer is null)
+            return new List<PrinterLoadedSpoolDto>();
+
+        return await _db.PrinterLoadedSpools
+            .AsNoTracking()
+            .Where(x => x.PrinterId == printer.Id && x.IsActive)
+            .OrderBy(x => x.SlotIndex)
+            .Select(x => new PrinterLoadedSpoolDto
+            {
+                Id = x.Id,
+                DeviceId = printer.DeviceId,
+                PrinterName = printer.Name,
+                SlotIndex = x.SlotIndex,
+                SpoolCode = x.SpoolCode,
+                MaterialType = x.MaterialType,
+                ColorName = x.ColorName,
+                ColorHex = x.ColorHex,
+                RemainingPercent = x.RemainingPercent,
+                RemainingGrams = x.RemainingGrams,
+                IsActive = x.IsActive,
+                UpdatedAtUtc = x.UpdatedAtUtc
+            })
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<PrinterReplacementSuggestionDto?> GetReplacementSuggestionsAsync(
+        string deviceId,
+        decimal lowThresholdPercent = 15m,
+        CancellationToken cancellationToken = default)
+    {
+        var printer = await _db.Printers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.DeviceId == deviceId, cancellationToken);
+
+        if (printer is null)
             return null;
 
-        // Expected examples:
-        // FIL-PETG-RED
-        // FIL-PETG-BLUE
-        // FIL-PLA-GREEN
-        var parts = spoolId
+        var loadedSpools = await _db.PrinterLoadedSpools
+            .AsNoTracking()
+            .Where(x => x.PrinterId == printer.Id && x.IsActive)
+            .OrderBy(x => x.SlotIndex)
+            .ToListAsync(cancellationToken);
+
+        var inventorySpools = await _db.CvZoneSpools
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var result = new PrinterReplacementSuggestionDto
+        {
+            DeviceId = deviceId
+        };
+
+        foreach (var loaded in loadedSpools)
+        {
+            if (!loaded.RemainingPercent.HasValue || loaded.RemainingPercent.Value > lowThresholdPercent)
+                continue;
+
+            var matches = inventorySpools
+                .Where(x =>
+                    x.MaterialType.Equals(loaded.MaterialType, StringComparison.OrdinalIgnoreCase) &&
+                    x.ColorName.Equals(loaded.ColorName, StringComparison.OrdinalIgnoreCase))
+                .GroupBy(x => x.ZoneName, StringComparer.OrdinalIgnoreCase)
+                .Select(g => new InventoryZoneMatchDto
+                {
+                    ZoneName = g.Key,
+                    MatchingSpoolCodes = g.Select(x => x.SpoolCode).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+                })
+                .OrderBy(x => x.ZoneName)
+                .ToList();
+
+            result.Replacements.Add(new PrinterReplacementItemDto
+            {
+                SlotIndex = loaded.SlotIndex,
+                CurrentSpoolCode = loaded.SpoolCode,
+                MaterialType = loaded.MaterialType,
+                ColorName = loaded.ColorName,
+                ColorHex = loaded.ColorHex,
+                RemainingPercent = loaded.RemainingPercent,
+                RemainingGrams = loaded.RemainingGrams,
+                SuggestedZones = matches
+            });
+        }
+
+        return result;
+    }
+
+    public async Task<List<PrinterLoadedSpoolDto>?> UpdatePrinterLoadedSpoolsAsync(
+        string deviceId,
+        UpdatePrinterLoadedSpoolsRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var printer = await _db.Printers
+            .AsNoTracking()
+            .Include(x => x.AmsUnits)
+            .FirstOrDefaultAsync(x => x.DeviceId == deviceId, cancellationToken);
+
+        if (printer is null)
+            return null;
+
+        if (request.LoadedSpools is null)
+            throw new InvalidOperationException("LoadedSpools is required.");
+
+        var duplicateSlot = request.LoadedSpools
+            .GroupBy(x => x.SlotIndex)
+            .FirstOrDefault(g => g.Count() > 1);
+
+        if (duplicateSlot is not null)
+            throw new InvalidOperationException($"Duplicate SlotIndex detected: {duplicateSlot.Key}");
+
+        foreach (var item in request.LoadedSpools)
+        {
+            if (item.SlotIndex < 0)
+                throw new InvalidOperationException("SlotIndex must be >= 0.");
+
+            if (string.IsNullOrWhiteSpace(item.SpoolCode))
+                throw new InvalidOperationException("SpoolCode is required.");
+
+            if (string.IsNullOrWhiteSpace(item.MaterialType))
+                throw new InvalidOperationException("MaterialType is required.");
+
+            if (string.IsNullOrWhiteSpace(item.ColorName))
+                throw new InvalidOperationException("ColorName is required.");
+
+            if (string.IsNullOrWhiteSpace(item.ColorHex))
+                throw new InvalidOperationException("ColorHex is required.");
+
+            if (item.RemainingPercent.HasValue &&
+                (item.RemainingPercent.Value < 0 || item.RemainingPercent.Value > 100))
+            {
+                throw new InvalidOperationException("RemainingPercent must be between 0 and 100.");
+            }
+
+            if (item.PrinterAmsUnitId.HasValue &&
+                !printer.AmsUnits.Any(x => x.Id == item.PrinterAmsUnitId.Value))
+            {
+                throw new InvalidOperationException(
+                    $"PrinterAmsUnitId '{item.PrinterAmsUnitId.Value}' does not belong to printer '{deviceId}'.");
+            }
+        }
+
+        var now = DateTimeOffset.UtcNow;
+
+        var existing = await _db.PrinterLoadedSpools
+            .Where(x => x.PrinterId == printer.Id && x.IsActive)
+            .ToListAsync(cancellationToken);
+
+        // Replace current active loaded spools for this printer
+        foreach (var row in existing)
+        {
+            row.IsActive = false;
+            row.UpdatedAtUtc = now;
+        }
+
+        foreach (var item in request.LoadedSpools)
+        {
+            _db.PrinterLoadedSpools.Add(new PrinterLoadedSpool
+            {
+                Id = Guid.NewGuid(),
+                PrinterId = printer.Id,
+                PrinterAmsUnitId = item.PrinterAmsUnitId,
+                SlotIndex = item.SlotIndex,
+                SpoolCode = item.SpoolCode.Trim(),
+                MaterialType = item.MaterialType.Trim().ToUpperInvariant(),
+                ColorName = item.ColorName.Trim().ToLowerInvariant(),
+                ColorHex = item.ColorHex.Trim().ToUpperInvariant(),
+                RemainingPercent = item.RemainingPercent,
+                RemainingGrams = item.RemainingGrams,
+                IsActive = true,
+                CreatedAtUtc = now,
+                UpdatedAtUtc = now
+            });
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return await GetPrinterLoadedSpoolsAsync(deviceId, cancellationToken);
+    }
+
+    private static (string MaterialType, string ColorName, string ColorHex)? TryParseSpoolCode(string spoolCode)
+    {
+        if (string.IsNullOrWhiteSpace(spoolCode))
+            return null;
+
+        var parts = spoolCode
             .Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
+        // Example: FIL-PETG-RED
         if (parts.Length < 3)
             return null;
 
-        // Treat the last segment as color
-        var rawColor = parts[^1];
+        var materialType = parts[1].ToUpperInvariant();
+        var colorName = parts[^1].ToLowerInvariant();
+        var colorHex = ColorNameToHex(colorName);
 
-        if (string.IsNullOrWhiteSpace(rawColor))
-            return null;
-
-        return rawColor.ToLowerInvariant();
+        return (materialType, colorName, colorHex);
     }
 
-    private static List<string> DeserializeSpoolIds(string spoolIdsJson)
+    private static string ColorNameToHex(string colorName)
     {
-        if (string.IsNullOrWhiteSpace(spoolIdsJson))
-            return new List<string>();
-
-        try
+        return colorName.ToLowerInvariant() switch
         {
-            return JsonSerializer.Deserialize<List<string>>(spoolIdsJson) ?? new List<string>();
-        }
-        catch
-        {
-            return new List<string>();
-        }
-    }
-
-    // Temporary stub for compile-time shape. Replace/remove when your real spool registry entity exists.
-    private class SpoolRegistryStub
-    {
-        public Guid Id { get; set; }
-        public string SpoolId { get; set; } = default!;
-        public string? Color { get; set; }
+            "red" => "#FF0000",
+            "blue" => "#0000FF",
+            "black" => "#000000",
+            "green" => "#00FF00",
+            _ => "#808080"
+        };
     }
 }
