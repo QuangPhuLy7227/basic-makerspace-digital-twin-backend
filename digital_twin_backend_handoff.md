@@ -196,20 +196,30 @@ Supports:
 ### Printers
 - `GET /api/printers`
 - `GET /api/printers/{deviceId}`
+- `GET /api/printers/by-name?name={name}`
 - `GET /api/printers/running` (should return currently running printers)
 - `GET /api/printers/{deviceId}/firmware`
+- `GET /api/printers/by-name/firmware?name={name}`
 - `GET /api/printers/{deviceId}/ams-units`
+- `GET /api/printers/by-name/ams-units?name={name}`
 - `GET /api/printers/{deviceId}/tasks`
+- `GET /api/printers/by-name/tasks?name={name}`
 - `GET /api/printers/{deviceId}/messages`
+- `GET /api/printers/by-name/messages?name={name}`
 - `GET /api/printers/{deviceId}/timeline`
+- `GET /api/printers/by-name/timeline?name={name}`
 
 ### Simulation
 - `POST /api/printers/{deviceId}/simulate/start`
 - `POST /api/printers/{deviceId}/simulate/stop`
+- `POST /api/printers/by-name/simulate/start?name={name}`
+- `POST /api/printers/by-name/simulate/stop?name={name}`
 
 ### Telemetry
 - `GET /api/printers/{deviceId}/telemetry`
 - `GET /api/printers/{deviceId}/telemetry/stream`
+- `GET /api/printers/by-name/telemetry?name={name}`
+- `GET /api/printers/by-name/telemetry/stream?name={name}`
 - task summary route planned/added around: `GET /api/tasks/{externalTaskId}/summary`
 
 ### Activity/table-style routes
@@ -300,4 +310,3 @@ Current backend is enough to start AI/LLM integration, but not yet ideal for str
 Paste this document first, then say:
 
 "Continue helping me on this Digital Twin backend. Keep the current architecture and logic consistent. I will paste the specific file or error next."
-

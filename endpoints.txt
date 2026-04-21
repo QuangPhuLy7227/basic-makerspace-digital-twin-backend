@@ -1,11 +1,17 @@
 Fleet / printer-focused
 curl http://localhost:5017/api/printers
 curl http://localhost:5017/api/printers/01P00A3B2300627
+curl "http://localhost:5017/api/printers/by-name?name=A1-P1S"
 curl http://localhost:5017/api/printers/01P00A3B2300627/firmware
+curl "http://localhost:5017/api/printers/by-name/firmware?name=A1-P1S"
 curl http://localhost:5017/api/printers/01P00A3B2300627/ams-units
+curl "http://localhost:5017/api/printers/by-name/ams-units?name=A1-P1S"
 curl http://localhost:5017/api/printers/01P00A3B2300627/tasks
+curl "http://localhost:5017/api/printers/by-name/tasks?name=A1-P1S"
 curl http://localhost:5017/api/printers/01P00A3B2300627/messages
+curl "http://localhost:5017/api/printers/by-name/messages?name=A1-P1S"
 curl http://localhost:5017/api/printers/01P00A3B2300627/timeline
+curl "http://localhost:5017/api/printers/by-name/timeline?name=A1-P1S"
 
 
 
@@ -24,16 +30,25 @@ curl -X POST http://localhost:5017/api/printers/01P00A3C1900861/simulate/start \
     "designTitle": "Hydraulic Valve Cap",
     "simulatedDurationSeconds": 180
   }'
+curl -X POST "http://localhost:5017/api/printers/by-name/simulate/start?name=B8-P1S" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "designTitle": "Hydraulic Valve Cap",
+    "simulatedDurationSeconds": 180
+  }'
 
 curl -X POST http://localhost:5017/api/printers/01P00A3C1900861/simulate/stop
+curl -X POST "http://localhost:5017/api/printers/by-name/simulate/stop?name=B8-P1S"
 
 GET /api/printers/running
 
 
 curl "http://localhost:5017/api/printers/01P00A3B2300627/telemetry?minutes=30"
+curl "http://localhost:5017/api/printers/by-name/telemetry?name=A1-P1S&minutes=30"
 
 <<<<<<< Client Streaming Real-time data >>>>>>>
 const es = new EventSource("/api/printers/01P00A3B2300627/telemetry/stream");
+const esByName = new EventSource("/api/printers/by-name/telemetry/stream?name=A1-P1S");
 
 es.addEventListener("telemetry", (event) => {
   const point = JSON.parse(event.data);
@@ -42,6 +57,7 @@ es.addEventListener("telemetry", (event) => {
 ###################################################################
 OR http://localhost:5017/api/printers/01P00A3B2300627/telemetry/stream
 OR curl -N http://localhost:5017/api/printers/01P00A3C1900861/telemetry/stream
+OR "http://localhost:5017/api/printers/by-name/telemetry/stream?name=A1-P1S"
 
 
 GET /api/tasks/{externalTaskId}/summary

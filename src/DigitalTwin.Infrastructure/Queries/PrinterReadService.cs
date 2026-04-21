@@ -51,27 +51,68 @@ public class PrinterReadService
 
     public async Task<PrinterDetailDto?> GetPrinterDetailAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        var now = DateTimeOffset.UtcNow;
+        var printer = await CreatePrinterDetailQuery()
+            .FirstOrDefaultAsync(p => p.DeviceId == deviceId, cancellationToken);
 
-        var printer = await _db.Printers
+        return printer is null
+            ? null
+            : await BuildPrinterDetailAsync(printer, cancellationToken);
+    }
+
+    public async Task<string?> ResolveDeviceIdByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return null;
+
+        var normalizedName = name.Trim();
+
+        var deviceIds = await _db.Printers
+            .AsNoTracking()
+            .Where(p => p.Name == normalizedName)
+            .Select(p => p.DeviceId)
+            .Take(2)
+            .ToListAsync(cancellationToken);
+
+        return deviceIds.Count switch
+        {
+            0 => null,
+            > 1 => throw new InvalidOperationException($"Multiple printers found with name '{normalizedName}'."),
+            _ => deviceIds[0]
+        };
+    }
+
+    public async Task<PrinterDetailDto?> GetPrinterDetailByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        var deviceId = await ResolveDeviceIdByNameAsync(name, cancellationToken);
+        return deviceId is null
+            ? null
+            : await GetPrinterDetailAsync(deviceId, cancellationToken);
+    }
+
+    private IQueryable<Printer> CreatePrinterDetailQuery()
+    {
+        return _db.Printers
             .AsNoTracking()
             .Include(p => p.FirmwareStatus)
             .Include(p => p.AmsUnits)
-            .Include(p => p.SimulationControl)
-            .FirstOrDefaultAsync(p => p.DeviceId == deviceId, cancellationToken);
+            .Include(p => p.SimulationControl);
+    }
 
-        if (printer is null)
-            return null;
+    private async Task<PrinterDetailDto> BuildPrinterDetailAsync(Printer printer, CancellationToken cancellationToken)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var operationalState = ResolveOperationalState(printer, now);
+        var isSimulationControlled = IsSimulationLocked(printer, now);
 
         var latestTask = await _db.PrinterTasks
             .AsNoTracking()
-            .Where(x => x.DeviceId == deviceId)
+            .Where(x => x.DeviceId == printer.DeviceId)
             .OrderByDescending(x => x.StartTimeUtc)
             .FirstOrDefaultAsync(cancellationToken);
 
         var latestMessage = await _db.PrinterMessages
             .AsNoTracking()
-            .Where(x => x.DeviceId == deviceId)
+            .Where(x => x.DeviceId == printer.DeviceId)
             .OrderByDescending(x => x.CreateTimeUtc)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -86,9 +127,9 @@ public class PrinterReadService
             Structure = printer.Structure,
             NozzleDiameterMm = printer.NozzleDiameterMm,
 
-            OperationalState = ResolveOperationalState(printer, now),
-            IsRunning = ResolveOperationalState(printer, now) == "RUNNING",
-            IsSimulationControlled = IsSimulationLocked(printer, now),
+            OperationalState = operationalState,
+            IsRunning = string.Equals(operationalState, "RUNNING", StringComparison.OrdinalIgnoreCase),
+            IsSimulationControlled = isSimulationControlled,
 
             Firmware = printer.FirmwareStatus == null ? null : new PrinterFirmwareDto
             {
