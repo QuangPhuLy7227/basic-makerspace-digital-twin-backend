@@ -1,4 +1,6 @@
 using DigitalTwin.Infrastructure.Queries;
+using DigitalTwin.Infrastructure.Inventory;
+using DigitalTwin.Application.Inventory.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DigitalTwin.Api.Controllers;
@@ -77,5 +79,46 @@ public class PrintersController : ControllerBase
         CancellationToken cancellationToken)
     {
         return Ok(await readService.GetPrinterTimelineAsync(deviceId, cancellationToken));
+    }
+
+    [HttpGet("{deviceId}/loaded-spools")]
+    public async Task<IActionResult> GetLoadedSpools(
+        string deviceId,
+        [FromServices] CvZoneStateService service,
+        CancellationToken cancellationToken)
+    {
+        var result = await service.GetPrinterLoadedSpoolsAsync(deviceId, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("{deviceId}/replacement-suggestions")]
+    public async Task<IActionResult> GetReplacementSuggestions(
+        string deviceId,
+        [FromQuery] decimal lowThresholdPercent,
+        [FromServices] CvZoneStateService service,
+        CancellationToken cancellationToken)
+    {
+        var threshold = lowThresholdPercent <= 0 ? 15m : lowThresholdPercent;
+
+        var result = await service.GetReplacementSuggestionsAsync(deviceId, threshold, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [HttpPut("{deviceId}/loaded-spools")]
+    public async Task<IActionResult> UpdateLoadedSpools(
+        string deviceId,
+        [FromBody] UpdatePrinterLoadedSpoolsRequest request,
+        [FromServices] CvZoneStateService service,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await service.UpdatePrinterLoadedSpoolsAsync(deviceId, request, cancellationToken);
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }

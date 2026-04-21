@@ -1,15 +1,16 @@
+using Microsoft.EntityFrameworkCore;
 using DigitalTwin.Api.HostedServices;
 using DigitalTwin.Infrastructure;
 using DigitalTwin.Infrastructure.Sync;
 using DigitalTwin.Infrastructure.Queries;
 using DigitalTwin.Infrastructure.Simulation;
-using DigitalTwin.Api.HostedServices;
 using DigitalTwin.Api.Streaming;
 using DigitalTwin.Application.Abstractions.Telemetry;
 using DigitalTwin.Infrastructure.Telemetry;
 using DigitalTwin.Infrastructure.Scheduling;
 using DigitalTwin.Application.Abstractions.Inventory;
 using DigitalTwin.Infrastructure.Inventory;
+using DigitalTwin.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,10 +52,24 @@ builder.Services.AddHostedService<PrinterSimulationTelemetryWorker>();
 // }
 builder.Services.AddSingleton<IZoneInventoryPublisher, InMemoryZoneInventoryPublisher>();
 builder.Services.AddScoped<CvZoneStateService>();
+builder.Services.AddScoped<PrinterLoadedSpoolSeeder>();
 
 builder.Services.AddHostedService<CvEventsConsumerWorker>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var db = scope.ServiceProvider.GetRequiredService<DigitalTwin.Infrastructure.Persistence.DigitalTwinDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<PrinterLoadedSpoolSeeder>();
+
+    logger.LogInformation("Applying database migrations...");
+    await db.Database.MigrateAsync();
+
+    logger.LogInformation("Seeding printer_loaded_spools...");
+    await seeder.SeedAsync();
+}
 
 app.UseCors("AllowAll");
 

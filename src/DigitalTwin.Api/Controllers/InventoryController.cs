@@ -54,4 +54,28 @@ public class InventoryController : ControllerBase
             await Response.Body.FlushAsync(cancellationToken);
         }
     }
+
+    [HttpGet("spools")]
+    public async Task<IActionResult> GetInventorySpools(
+        [FromQuery] string? materialType,
+        [FromQuery] string? colorName,
+        [FromServices] CvZoneStateService service,
+        CancellationToken cancellationToken)
+    {
+        var items = await service.GetInventorySpoolsAsync(materialType, colorName, cancellationToken);
+
+        var result = items.Select(x => new
+        {
+            camera_id = x.CameraId,
+            zone_name = x.ZoneName,
+            spool_code = x.SpoolCode,
+            material_type = x.MaterialType,
+            color_name = x.ColorName,
+            color_hex = x.ColorHex,
+            last_seen_at_utc = x.LastSeenAtUtc,
+            updated_at_utc = x.UpdatedAtUtc
+        });
+
+        return Ok(result);
+    }
 }
