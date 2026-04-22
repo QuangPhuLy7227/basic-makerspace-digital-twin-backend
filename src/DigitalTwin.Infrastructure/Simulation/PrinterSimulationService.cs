@@ -245,6 +245,7 @@ public class PrinterSimulationService
         {
             Id = Guid.NewGuid(),
             ExternalTaskId = externalTaskId,
+            TaskAlias = PrinterTask.BuildTaskAlias(printer.Name, printer.DeviceId, externalTaskId),
             PrinterId = printer.Id,
             DeviceId = printer.DeviceId,
             DeviceName = printer.Name,

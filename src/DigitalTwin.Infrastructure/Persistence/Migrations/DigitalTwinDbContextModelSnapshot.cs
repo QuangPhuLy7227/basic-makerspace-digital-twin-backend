@@ -556,6 +556,11 @@ namespace DigitalTwin.Infrastructure.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<string>("TaskAlias")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<DateTimeOffset>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -571,6 +576,9 @@ namespace DigitalTwin.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.HasIndex("PrinterId");
+
+                    b.HasIndex("TaskAlias")
+                        .IsUnique();
 
                     b.ToTable("printer_tasks", (string)null);
                 });

@@ -61,10 +61,15 @@ public class PrinterActivitySyncService
                 {
                     Id = Guid.NewGuid(),
                     ExternalTaskId = dto.Id,
+                    TaskAlias = PrinterTask.BuildTaskAlias(dto.DeviceName, dto.DeviceId, dto.Id),
                     CreatedAtUtc = now
                 };
 
                 _db.PrinterTasks.Add(task);
+            }
+            else if (string.IsNullOrWhiteSpace(task.TaskAlias))
+            {
+                task.TaskAlias = PrinterTask.BuildTaskAlias(dto.DeviceName, dto.DeviceId, dto.Id);
             }
 
             task.PrinterId = printer?.Id;

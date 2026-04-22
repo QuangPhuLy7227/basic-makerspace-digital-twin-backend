@@ -13,9 +13,11 @@ public class PrinterTaskConfiguration : IEntityTypeConfiguration<PrinterTask>
         builder.HasKey(x => x.Id);
 
         builder.HasIndex(x => x.ExternalTaskId).IsUnique();
+        builder.HasIndex(x => x.TaskAlias).IsUnique();
         builder.HasIndex(x => x.DeviceId);
 
         builder.Property(x => x.DeviceId).IsRequired().HasMaxLength(64);
+        builder.Property(x => x.TaskAlias).IsRequired().HasMaxLength(64);
         builder.Property(x => x.DeviceName).HasMaxLength(256);
         builder.Property(x => x.DeviceModel).HasMaxLength(64);
         builder.Property(x => x.DesignTitle).HasMaxLength(512);

@@ -3588,19 +3588,19 @@
     ]
   },
   "packageFolders": {
-    "/home/wangserver2/.nuget/packages/": {}
+    "/Users/me.peter/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj",
+      "projectUniqueName": "/Users/me.peter/Downloads/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj",
       "projectName": "DigitalTwin.Infrastructure",
-      "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj",
-      "packagesPath": "/home/wangserver2/.nuget/packages/",
-      "outputPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/obj/",
+      "projectPath": "/Users/me.peter/Downloads/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/DigitalTwin.Infrastructure.csproj",
+      "packagesPath": "/Users/me.peter/.nuget/packages/",
+      "outputPath": "/Users/me.peter/Downloads/basic-makerspace-digital-twin-backend/src/DigitalTwin.Infrastructure/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/wangserver2/.nuget/NuGet/NuGet.Config"
+        "/Users/me.peter/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -3612,11 +3612,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj": {
-              "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj"
+            "/Users/me.peter/Downloads/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj": {
+              "projectPath": "/Users/me.peter/Downloads/basic-makerspace-digital-twin-backend/src/DigitalTwin.Application/DigitalTwin.Application.csproj"
             },
-            "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj": {
-              "projectPath": "/home/wangserver2/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj"
+            "/Users/me.peter/Downloads/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj": {
+              "projectPath": "/Users/me.peter/Downloads/basic-makerspace-digital-twin-backend/src/DigitalTwin.Domain/DigitalTwin.Domain.csproj"
             }
           }
         }
@@ -3630,7 +3630,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -3686,12 +3687,22 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.26, 8.0.26]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.26, 8.0.26]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/x64/sdk/10.0.203/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
