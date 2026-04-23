@@ -89,6 +89,20 @@ public class PrinterReadService
             : await GetPrinterDetailAsync(deviceId, cancellationToken);
     }
 
+    public async Task<long?> ResolveExternalTaskIdByTaskAliasAsync(string taskAlias, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(taskAlias))
+            return null;
+
+        var normalizedTaskAlias = taskAlias.Trim().ToUpperInvariant();
+
+        return await _db.PrinterTasks
+            .AsNoTracking()
+            .Where(x => x.TaskAlias == normalizedTaskAlias)
+            .Select(x => (long?)x.ExternalTaskId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     private IQueryable<Printer> CreatePrinterDetailQuery()
     {
         return _db.Printers
@@ -157,6 +171,7 @@ public class PrinterReadService
             LatestTask = latestTask == null ? null : new PrinterTaskSummaryDto
             {
                 ExternalTaskId = latestTask.ExternalTaskId,
+                TaskAlias = latestTask.TaskAlias,
                 DesignTitle = latestTask.DesignTitle,
                 StartTimeUtc = latestTask.StartTimeUtc,
                 EndTimeUtc = latestTask.EndTimeUtc,
@@ -225,6 +240,7 @@ public class PrinterReadService
             .Select(x => new PrinterTaskItemDto
             {
                 ExternalTaskId = x.ExternalTaskId,
+                TaskAlias = x.TaskAlias,
                 PrinterId = x.PrinterId,
                 DeviceId = x.DeviceId,
                 DeviceName = x.DeviceName,
@@ -268,6 +284,7 @@ public class PrinterReadService
             .Select(x => new PrinterTaskItemDto
             {
                 ExternalTaskId = x.ExternalTaskId,
+                TaskAlias = x.TaskAlias,
                 PrinterId = x.PrinterId,
                 DeviceId = x.DeviceId,
                 DeviceName = x.DeviceName,
@@ -311,6 +328,7 @@ public class PrinterReadService
             .Select(x => new PrinterTaskItemDto
             {
                 ExternalTaskId = x.ExternalTaskId,
+                TaskAlias = x.TaskAlias,
                 PrinterId = x.PrinterId,
                 DeviceId = x.DeviceId,
                 DeviceName = x.DeviceName,

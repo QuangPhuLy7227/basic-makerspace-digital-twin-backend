@@ -3,6 +3,7 @@ namespace DigitalTwin.Application.Telemetry.Models;
 public class TaskTelemetrySummaryDto
 {
     public long ExternalTaskId { get; set; }
+    public string TaskAlias { get; set; } = null!;
     public string DeviceId { get; set; } = null!;
     public string? DesignTitle { get; set; }
     public string StatusText { get; set; } = null!;

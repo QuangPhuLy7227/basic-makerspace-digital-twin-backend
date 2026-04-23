@@ -34,6 +34,7 @@ public class TaskTelemetrySummaryService
             return new TaskTelemetrySummaryDto
             {
                 ExternalTaskId = task.ExternalTaskId,
+                TaskAlias = task.TaskAlias,
                 DeviceId = task.DeviceId,
                 DesignTitle = task.DesignTitle,
                 StatusText = task.StatusText ?? "UNKNOWN",
@@ -58,6 +59,7 @@ public class TaskTelemetrySummaryService
             return new TaskTelemetrySummaryDto
             {
                 ExternalTaskId = task.ExternalTaskId,
+                TaskAlias = task.TaskAlias,
                 DeviceId = task.DeviceId,
                 DesignTitle = task.DesignTitle,
                 StatusText = task.StatusText ?? "UNKNOWN",
@@ -73,6 +75,7 @@ public class TaskTelemetrySummaryService
         return new TaskTelemetrySummaryDto
         {
             ExternalTaskId = task.ExternalTaskId,
+            TaskAlias = task.TaskAlias,
             DeviceId = task.DeviceId,
             DesignTitle = task.DesignTitle,
             StatusText = task.StatusText ?? "UNKNOWN",

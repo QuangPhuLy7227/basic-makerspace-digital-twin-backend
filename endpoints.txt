@@ -28,10 +28,12 @@ curl -X PUT "http://localhost:5017/api/printers/by-name/loaded-spools?name=A1-P1
 Table-style activity routes
 curl http://localhost:5017/api/tasks
 curl http://localhost:5017/api/tasks/123456
+curl http://localhost:5017/api/tasks/by-alias/PT-B1-P1S-19D127BA65B
 curl http://localhost:5017/api/messages
 curl http://localhost:5017/api/messages/123456
 curl http://localhost:5017/api/task-ams-details
 curl http://localhost:5017/api/task-ams-details/by-task/123456
+curl http://localhost:5017/api/task-ams-details/by-task-alias/PT-B1-P1S-19D127BA65B
 
 
 curl -X POST http://localhost:5017/api/printers/01P00A3C1900861/simulate/start \
@@ -71,6 +73,9 @@ OR "http://localhost:5017/api/printers/by-name/telemetry/stream?name=A1-P1S"
 
 
 GET /api/tasks/{externalTaskId}/summary
+GET /api/tasks/by-alias/{taskAlias}/summary
+curl http://localhost:5017/api/tasks/1774131586651/summary
+curl http://localhost:5017/api/tasks/by-alias/PT-B1-P1S-19D127BA65B/summary
 
 
 curl -X POST http://localhost:5017/api/scheduled-print-jobs \

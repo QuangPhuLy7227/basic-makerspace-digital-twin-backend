@@ -227,14 +227,17 @@ Supports:
 - `GET /api/printers/by-name/telemetry?name={name}`
 - `GET /api/printers/by-name/telemetry/stream?name={name}`
 - task summary route planned/added around: `GET /api/tasks/{externalTaskId}/summary`
+- task alias summary route added around: `GET /api/tasks/by-alias/{taskAlias}/summary`
 
 ### Activity/table-style routes
 - `GET /api/tasks`
 - `GET /api/tasks/{externalTaskId}`
+- `GET /api/tasks/by-alias/{taskAlias}`
 - `GET /api/messages`
 - `GET /api/messages/{externalMessageId}`
 - `GET /api/task-ams-details`
 - `GET /api/task-ams-details/by-task/{externalTaskId}`
+- `GET /api/task-ams-details/by-task-alias/{taskAlias}`
 
 ### Scheduled jobs
 - `POST /api/scheduled-print-jobs`

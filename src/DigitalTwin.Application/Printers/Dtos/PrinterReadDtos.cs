@@ -72,6 +72,7 @@ public class PrinterAmsUnitDto
 public class PrinterTaskSummaryDto
 {
     public long ExternalTaskId { get; set; }
+    public string TaskAlias { get; set; } = null!;
     public string? DesignTitle { get; set; }
     public DateTimeOffset? StartTimeUtc { get; set; }
     public DateTimeOffset? EndTimeUtc { get; set; }
@@ -90,6 +91,7 @@ public class PrinterMessageSummaryDto
 public class PrinterTaskItemDto
 {
     public long ExternalTaskId { get; set; }
+    public string TaskAlias { get; set; } = null!;
     public Guid? PrinterId { get; set; }
     public string DeviceId { get; set; } = null!;
     public string? DeviceName { get; set; }
